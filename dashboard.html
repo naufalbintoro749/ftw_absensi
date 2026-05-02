@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Admin — Fatih Elektronik</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    *{font-family:'Inter',sans-serif;box-sizing:border-box;}
+    ::-webkit-scrollbar{width:5px;height:5px;}
+    ::-webkit-scrollbar-track{background:#220c0c;}
+    ::-webkit-scrollbar-thumb{background:#7f1d1d;border-radius:3px;}
+    select option{background:#2d1010;}
+    input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.6);}
+    .nav-active{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(239,68,68,.05));color:#fca5a5;border:1px solid rgba(239,68,68,.2);}
+    .nav-link{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:.85rem;font-weight:500;color:rgba(255,255,255,.4);transition:all .2s;text-decoration:none;border:1px solid transparent;}
+    .nav-link:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.8);}
+    .card{background:#220c0c;border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;}
+    .th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.25);background:#1a0808;border-bottom:1px solid rgba(255,255,255,.05);}
+    .td{padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.83rem;color:rgba(255,255,255,.6);vertical-align:middle;}
+    tr:hover .td{background:rgba(255,255,255,.02);color:rgba(255,255,255,.85);}
+    .btn-red{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .2s;box-shadow:0 3px 12px rgba(239,68,68,.3);}
+    .btn-red:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(239,68,68,.45);}
+    .btn-ghost{background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.08);padding:7px 14px;border-radius:9px;font-size:.8rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,.1);color:#fff;}
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+    .modal-box{background:#220c0c;border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:28px;width:100%;max-width:460px;box-shadow:0 24px 64px rgba(0,0,0,.6);}
+    .field-label{display:block;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.35);margin-bottom:7px;}
+    .field-input{width:100%;background:#2d1010;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:11px 14px;font-size:.88rem;color:#fff;outline:none;transition:border .2s;}
+    .field-input:focus{border-color:rgba(239,68,68,.5);}
+    select.field-input option{background:#2d1010;}
+  </style>
+</head>
+<body style="background:#1a0808;color:#fff;display:flex;min-height:100vh;">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" style="width:240px;flex-shrink:0;background:#0f0505;border-right:1px solid rgba(239,68,68,.12);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s;">
+    <!-- Logo -->
+    <div style="display:flex;align-items:center;gap:12px;padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.05);">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,rgba(239,68,68,.25),rgba(239,68,68,.05));border:1px solid rgba(239,68,68,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#f87171;font-size:.9rem;flex-shrink:0;">
+        <i class="fas fa-tools"></i>
+      </div>
+      <div>
+        <div style="font-size:.85rem;font-weight:700;color:#fff;line-height:1.2;">Fatih Elektronik</div>
+        <div style="font-size:.7rem;color:#ef4444;font-weight:600;">Service</div>
+      </div>
+    </div>
+    <!-- Nav -->
+    <nav style="flex:1;padding:14px 10px;overflow-y:auto;">
+      <p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.2);padding:8px 10px 4px;">Menu Utama</p>
+      <a href="dashboard.html" class="nav-link nav-active"><i class="fas fa-chart-pie" style="width:16px;text-align:center;"></i>Dashboard</a>
+      <a href="absensi.html"   class="nav-link"><i class="fas fa-camera" style="width:16px;text-align:center;"></i>Absensi</a>
+      <p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.2);padding:14px 10px 4px;">Manajemen</p>
+      <a href="#sectionKaryawan" class="nav-link"><i class="fas fa-users" style="width:16px;text-align:center;"></i>Karyawan</a>
+      <a href="#sectionRekap"    class="nav-link"><i class="fas fa-chart-bar" style="width:16px;text-align:center;"></i>Rekap Bulanan</a>
+      <a href="#sectionDataAbsen" class="nav-link"><i class="fas fa-search" style="width:16px;text-align:center;"></i>Data Per Karyawan</a>
+    </nav>
+    <!-- User -->
+    <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-top:1px solid rgba(255,255,255,.05);">
+      <div style="width:32px;height:32px;background:#3d1515;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#f87171;font-size:.85rem;flex-shrink:0;"><i class="fas fa-user-shield"></i></div>
+      <div style="flex:1;min-width:0;">
+        <div id="adminName" style="font-size:.82rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Admin</div>
+        <div style="font-size:.7rem;color:rgba(255,255,255,.3);">Administrator</div>
+      </div>
+      <button onclick="logout()" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s;" onmouseover="this.style.background='rgba(239,68,68,.15)';this.style.color='#f87171';" onmouseout="this.style.background='none';this.style.color='rgba(255,255,255,.3)';">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Overlay mobile -->
+  <div id="sidebarOverlay" onclick="closeSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:190;"></div>
+
+  <!-- MAIN -->
+  <div style="flex:1;display:flex;flex-direction:column;min-height:100vh;margin-left:240px;" id="mainContent">
+
+    <!-- Topbar -->
+    <header style="height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(26,8,8,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.05);position:sticky;top:0;z-index:100;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button onclick="openSidebar()" id="menuBtn" style="display:none;background:none;border:none;color:rgba(255,255,255,.4);font-size:1.1rem;cursor:pointer;padding:6px;"><i class="fas fa-bars"></i></button>
+        <div>
+          <div style="font-size:1rem;font-weight:700;color:#fff;">Dashboard</div>
+          <div id="topbarDate" style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:1px;"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div id="navTimeDash" style="font-size:.85rem;font-weight:600;color:#fca5a5;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);padding:5px 14px;border-radius:20px;letter-spacing:1px;font-variant-numeric:tabular-nums;"></div>
+        <button onclick="loadAbsensiAdmin()" style="width:32px;height:32px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:all .2s;" onmouseover="this.style.color='#fff';" onmouseout="this.style.color='rgba(255,255,255,.4)';"><i class="fas fa-sync-alt"></i></button>
+      </div>
+    </header>
+
+    <main style="flex:1;padding:24px;display:flex;flex-direction:column;gap:20px;">
+
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+        <div style="background:#220c0c;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:transform .2s;" onmouseover="this.style.transform='translateY(-3px)';" onmouseout="this.style.transform='';">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ef4444,transparent);"></div>
+          <div style="width:46px;height:46px;background:rgba(239,68,68,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#f87171;font-size:1.2rem;flex-shrink:0;"><i class="fas fa-users"></i></div>
+          <div><div id="totalKaryawan" style="font-size:1.9rem;font-weight:800;color:#fff;line-height:1;">0</div><div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:3px;">Total Karyawan</div></div>
+        </div>
+        <div style="background:#220c0c;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:transform .2s;" onmouseover="this.style.transform='translateY(-3px)';" onmouseout="this.style.transform='';">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#22c55e,transparent);"></div>
+          <div style="width:46px;height:46px;background:rgba(34,197,94,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#4ade80;font-size:1.2rem;flex-shrink:0;"><i class="fas fa-user-check"></i></div>
+          <div><div id="hadirHariIni" style="font-size:1.9rem;font-weight:800;color:#fff;line-height:1;">0</div><div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:3px;">Hadir Hari Ini</div></div>
+        </div>
+        <div style="background:#220c0c;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:transform .2s;" onmouseover="this.style.transform='translateY(-3px)';" onmouseout="this.style.transform='';">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#f59e0b,transparent);"></div>
+          <div style="width:46px;height:46px;background:rgba(245,158,11,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fbbf24;font-size:1.2rem;flex-shrink:0;"><i class="fas fa-user-clock"></i></div>
+          <div><div id="terlambatHariIni" style="font-size:1.9rem;font-weight:800;color:#fff;line-height:1;">0</div><div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:3px;">Terlambat</div></div>
+        </div>
+        <div style="background:#220c0c;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:transform .2s;" onmouseover="this.style.transform='translateY(-3px)';" onmouseout="this.style.transform='';">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ef4444,transparent);"></div>
+          <div style="width:46px;height:46px;background:rgba(239,68,68,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#f87171;font-size:1.2rem;flex-shrink:0;"><i class="fas fa-user-times"></i></div>
+          <div><div id="absenHariIni" style="font-size:1.9rem;font-weight:800;color:#fff;line-height:1;">0</div><div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:3px;">Tidak Hadir</div></div>
+        </div>
+      </div>
+
+      <!-- Tabel Absensi -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap;gap:10px;">
+          <h2 style="font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:8px;"><i class="fas fa-clipboard-list" style="color:#ef4444;"></i> Absensi Hari Ini</h2>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <input type="date" id="filterTanggal" onchange="loadAbsensiAdmin()" class="field-input" style="padding:6px 10px;font-size:.8rem;width:auto;"/>
+            <button onclick="exportCSV()" class="btn-ghost"><i class="fas fa-download"></i> Export</button>
+            <button onclick="loadAbsensiAdmin()" class="btn-ghost" style="padding:7px 10px;"><i class="fas fa-sync"></i></button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th class="th">#</th><th class="th">Karyawan</th><th class="th">Divisi</th>
+              <th class="th">Jam Masuk</th><th class="th">Jam Keluar</th>
+              <th class="th">Status</th><th class="th">Lokasi</th><th class="th">Foto</th>
+            </tr></thead>
+            <tbody id="bodyAdmin"><tr><td colspan="8" class="td" style="text-align:center;color:rgba(255,255,255,.25);padding:28px;"><i class="fas fa-spinner fa-spin"></i> Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2 col -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="sectionKaryawan">
+
+        <!-- Karyawan -->
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.05);">
+            <h2 style="font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:8px;"><i class="fas fa-user-cog" style="color:#ef4444;"></i> Karyawan</h2>
+            <button onclick="showFormKaryawan()" class="btn-red" style="padding:7px 14px;font-size:.78rem;"><i class="fas fa-plus"></i> Tambah</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr><th class="th">Nama</th><th class="th">Divisi</th><th class="th">Username</th><th class="th">Aksi</th></tr></thead>
+              <tbody id="bodyKaryawan"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Rekap -->
+        <div class="card" id="sectionRekap">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.05);">
+            <h2 style="font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:8px;"><i class="fas fa-chart-bar" style="color:#ef4444;"></i> Rekap Bulanan</h2>
+            <select id="filterBulan" onchange="loadRekapBulanan()" class="field-input" style="padding:6px 10px;font-size:.8rem;width:auto;"></select>
+          </div>
+          <div id="rekapBulanan" style="padding:8px 16px 16px;"></div>
+        </div>
+      </div>
+
+      <!-- Data Absen Per Karyawan -->
+      <div class="card" id="sectionDataAbsen">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap;gap:10px;">
+          <h2 style="font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:8px;"><i class="fas fa-search" style="color:#ef4444;"></i> Data Absen Per Karyawan</h2>
+          <button onclick="exportDetailCSV()" class="btn-ghost" style="font-size:.78rem;"><i class="fas fa-download"></i> Export</button>
+        </div>
+        <!-- Filter -->
+        <div style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <div style="position:relative;flex:1;min-width:180px;">
+            <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.25);font-size:.78rem;pointer-events:none;"></i>
+            <input id="searchKaryawan" type="text" placeholder="Cari nama karyawan..."
+              style="width:100%;background:#2d1010;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:9px 14px 9px 34px;font-size:.85rem;color:#fff;outline:none;"
+              oninput="filterDataAbsen()"
+              onfocus="this.style.borderColor='rgba(239,68,68,.5)';"
+              onblur="this.style.borderColor='rgba(255,255,255,.08)';"/>
+          </div>
+          <select id="filterBulanDetail" onchange="filterDataAbsen()"
+            style="background:#2d1010;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:9px 14px;font-size:.85rem;color:#fff;outline:none;"></select>
+          <button onclick="resetDataAbsen()" class="btn-ghost" style="font-size:.78rem;"><i class="fas fa-times"></i> Reset</button>
+        </div>
+        <!-- Tabel -->
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th class="th">Nama</th>
+              <th class="th">Divisi</th>
+              <th class="th">Tanggal</th>
+              <th class="th">Hari</th>
+              <th class="th">Jam Masuk</th>
+              <th class="th">Jam Keluar</th>
+              <th class="th">Status</th>
+              <th class="th">Lokasi</th>
+            </tr></thead>
+            <tbody id="bodyDataAbsen">
+              <tr><td colspan="8" class="td" style="text-align:center;color:rgba(255,255,255,.25);padding:28px;">Pilih nama atau bulan untuk melihat data</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="dataAbsenInfo" style="padding:10px 20px;font-size:.78rem;color:rgba(255,255,255,.3);border-top:1px solid rgba(255,255,255,.04);"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal Karyawan -->
+  <div id="modalKaryawan" class="modal-bg">
+    <div class="modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.06);">
+        <h3 id="modalKaryawanTitle" style="font-size:1rem;font-weight:700;">Tambah Karyawan</h3>
+        <button onclick="closeModalKaryawan()" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:1.2rem;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:7px;" onmouseover="this.style.background='rgba(255,255,255,.07)';" onmouseout="this.style.background='none';"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="formKaryawan" onsubmit="simpanKaryawan(event)" style="display:flex;flex-direction:column;gap:14px;">
+        <div><label class="field-label">Nama Lengkap</label><input type="text" id="fNama" required placeholder="Nama lengkap" class="field-input"/></div>
+        <div><label class="field-label">Username</label><input type="text" id="fUsername" required placeholder="Username login" class="field-input"/></div>
+        <div><label class="field-label">Password <span style="text-transform:none;color:rgba(255,255,255,.2);font-weight:400;">(kosongkan jika tidak diubah)</span></label><input type="password" id="fPassword" placeholder="Password" class="field-input"/></div>
+        <div><label class="field-label">Divisi</label>
+          <select id="fDivisi" class="field-input"><option>Teknisi</option><option>Admin</option><option>Sales</option><option>Gudang</option><option>Kasir</option></select>
+        </div>
+        <div><label class="field-label">Jam Masuk</label><input type="time" id="fJamMasuk" value="08:30" required class="field-input"/></div>
+        <div><label class="field-label">Jam Pulang</label><input type="time" id="fJamPulang" value="17:00" required class="field-input"/></div>
+        <input type="hidden" id="fId"/>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);">
+          <button type="button" onclick="closeModalKaryawan()" class="btn-ghost">Batal</button>
+          <button type="submit" class="btn-red">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Foto -->
+  <div id="modalFoto" class="modal-bg">
+    <div class="modal-box" style="max-width:360px;text-align:center;padding:20px;position:relative;">
+      <button onclick="closeModalFoto()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:1.1rem;"><i class="fas fa-times"></i></button>
+      <img id="fotoAbsensi" src="" alt="Foto" style="width:100%;border-radius:12px;border:1px solid rgba(239,68,68,.2);"/>
+      <p id="fotoCaption" style="font-size:.8rem;color:rgba(255,255,255,.4);margin-top:10px;"></p>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script>
+    document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    function openSidebar()  { document.getElementById('sidebar').style.transform='translateX(0)'; document.getElementById('sidebarOverlay').style.display='block'; }
+    function closeSidebar() { document.getElementById('sidebar').style.transform='translateX(-100%)'; document.getElementById('sidebarOverlay').style.display='none'; }
+    function checkWidth() {
+      var isMobile = window.innerWidth < 1024;
+      document.getElementById('menuBtn').style.display = isMobile ? 'block' : 'none';
+      document.getElementById('mainContent').style.marginLeft = isMobile ? '0' : '240px';
+      document.getElementById('sidebar').style.transform = isMobile ? 'translateX(-100%)' : 'translateX(0)';
+    }
+    window.addEventListener('resize', checkWidth);
+    checkWidth();
+
+    // ===== DATA ABSEN PER KARYAWAN =====
+    (function initFilterBulanDetail() {
+      var sel = document.getElementById('filterBulanDetail');
+      var now = new Date();
+      var allOpt = document.createElement('option');
+      allOpt.value = ''; allOpt.textContent = 'Semua Bulan';
+      sel.appendChild(allOpt);
+      for (var i = 0; i < 12; i++) {
+        var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        var opt = document.createElement('option');
+        opt.value = d.toISOString().slice(0, 7);
+        opt.textContent = d.toLocaleDateString('id-ID', { month:'long', year:'numeric' });
+        if (i === 0) opt.selected = true;
+        sel.appendChild(opt);
+      }
+    })();
+
+    function filterDataAbsen() {
+      var search = document.getElementById('searchKaryawan').value.trim().toLowerCase();
+      var bulan  = document.getElementById('filterBulanDetail').value;
+      var users  = JSON.parse(localStorage.getItem('users') || '[]').filter(function(u){ return u.role === 'karyawan'; });
+      var absensi = JSON.parse(localStorage.getItem('absensi') || '[]');
+
+      if (search) users = users.filter(function(u){ return u.nama.toLowerCase().indexOf(search) !== -1; });
+
+      var rows = [];
+      users.forEach(function(u) {
+        var rec = absensi.filter(function(a){
+          return a.userId === u.id && (!bulan || a.tanggal.startsWith(bulan));
+        });
+        rec.sort(function(a,b){ return a.tanggal.localeCompare(b.tanggal); });
+        rec.forEach(function(a) {
+          rows.push({ u:u, a:a });
+        });
+      });
+
+      var tbody = document.getElementById('bodyDataAbsen');
+      var info  = document.getElementById('dataAbsenInfo');
+
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="td" style="text-align:center;color:rgba(255,255,255,.25);padding:28px;">' + (search || bulan ? 'Tidak ada data ditemukan' : 'Pilih nama atau bulan untuk melihat data') + '</td></tr>';
+        info.textContent = '';
+        return;
+      }
+
+      var statusStyle = {
+        'Tepat Waktu': 'background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.25)',
+        'Terlambat':   'background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.25)',
+        'Tidak Hadir': 'background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.25)',
+      };
+
+      tbody.innerHTML = rows.map(function(r) {
+        var tgl  = new Date(r.a.tanggal + 'T00:00:00');
+        var hari = tgl.toLocaleDateString('id-ID', { weekday:'long' });
+        var tglFmt = tgl.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+        var ss = statusStyle[r.a.status] || statusStyle['Tidak Hadir'];
+        return '<tr>'
+          + '<td class="td" style="font-weight:600;color:rgba(255,255,255,.9);">' + r.u.nama + '</td>'
+          + '<td class="td">' + r.u.divisi + '</td>'
+          + '<td class="td">' + tglFmt + '</td>'
+          + '<td class="td">' + hari + '</td>'
+          + '<td class="td" style="font-variant-numeric:tabular-nums;">' + (r.a.jamMasuk || '—') + '</td>'
+          + '<td class="td" style="font-variant-numeric:tabular-nums;">' + (r.a.jamKeluar || '—') + '</td>'
+          + '<td class="td"><span style="' + ss + ';font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:20px;display:inline-block;">' + r.a.status + '</span></td>'
+          + '<td class="td" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (r.a.lokasi || '—') + '</td>'
+          + '</tr>';
+      }).join('');
+
+      info.textContent = rows.length + ' record ditemukan';
+    }
+
+    function resetDataAbsen() {
+      document.getElementById('searchKaryawan').value = '';
+      document.getElementById('filterBulanDetail').selectedIndex = 1;
+      filterDataAbsen();
+    }
+
+    function exportDetailCSV() {
+      var search  = document.getElementById('searchKaryawan').value.trim().toLowerCase();
+      var bulan   = document.getElementById('filterBulanDetail').value;
+      var users   = JSON.parse(localStorage.getItem('users') || '[]').filter(function(u){ return u.role === 'karyawan'; });
+      var absensi = JSON.parse(localStorage.getItem('absensi') || '[]');
+      if (search) users = users.filter(function(u){ return u.nama.toLowerCase().indexOf(search) !== -1; });
+      var csv = 'Nama,Divisi,Tanggal,Hari,Jam Masuk,Jam Keluar,Status,Lokasi\n';
+      users.forEach(function(u) {
+        var rec = absensi.filter(function(a){ return a.userId === u.id && (!bulan || a.tanggal.startsWith(bulan)); });
+        rec.sort(function(a,b){ return a.tanggal.localeCompare(b.tanggal); });
+        rec.forEach(function(a) {
+          var tgl  = new Date(a.tanggal + 'T00:00:00');
+          var hari = tgl.toLocaleDateString('id-ID', { weekday:'long' });
+          csv += '"'+u.nama+'","'+u.divisi+'","'+a.tanggal+'","'+hari+'","'+(a.jamMasuk||'-')+'","'+(a.jamKeluar||'-')+'","'+a.status+'","'+(a.lokasi||'-')+'"\n';
+        });
+      });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv' }));
+      a.download = 'data_absen' + (bulan ? '_'+bulan : '') + '.csv';
+      a.click();
+    }
+
+    // Auto load bulan ini
+    window.addEventListener('DOMContentLoaded', function(){ filterDataAbsen(); });
+  </script>
+</body>
+</html>
