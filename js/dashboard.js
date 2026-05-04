@@ -29,7 +29,13 @@ function saveUsers(u) {
 function getAbsensi() {
   try { return JSON.parse(localStorage.getItem('absensi') || '[]'); } catch(e) { return []; }
 }
-function todayStr()   { return new Date().toISOString().split('T')[0]; }
+function todayStr() {
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var dd = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + dd;
+}
 
 // ===== CHIP =====
 function statusChip(status) {
@@ -135,13 +141,8 @@ function showFormKaryawan(id) {
 function editKaryawan(id) { showFormKaryawan(id); }
 
 function hapusKaryawan(id) {
-  if (!confirm('Hapus karyawan ini? Data absensinya juga akan dihapus.')) return;
+  if (!confirm('Hapus karyawan ini? Data absensinya tetap tersimpan.')) return;
   saveUsers(getUsers().filter(function(u){ return u.id !== id; }));
-  // Hapus semua data absensi milik karyawan ini + update backup
-  var absensi = getAbsensi().filter(function(a){ return a.userId !== id; });
-  var json = JSON.stringify(absensi);
-  localStorage.setItem('absensi', json);
-  sessionStorage.setItem('absensi_backup', json);
   loadKaryawan(); loadSummary(); loadAbsensiAdmin();
 }
 
@@ -205,7 +206,9 @@ function initFilterBulan() {
   var now = new Date();
   for (var i = 0; i < 6; i++) {
     var d   = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    var val = d.toISOString().slice(0, 7);
+    var y   = d.getFullYear();
+    var m   = String(d.getMonth() + 1).padStart(2, '0');
+    var val = y + '-' + m;
     var opt = document.createElement('option');
     opt.value = val;
     opt.textContent = d.toLocaleDateString('id-ID', { month:'long', year:'numeric' });
