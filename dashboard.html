@@ -87,6 +87,8 @@
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <div id="navTimeDash" style="font-size:.85rem;font-weight:600;color:#fca5a5;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);padding:5px 14px;border-radius:20px;letter-spacing:1px;font-variant-numeric:tabular-nums;"></div>
+        <button onclick="backupData()" title="Backup semua data" style="width:32px;height:32px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:8px;color:#4ade80;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;" onmouseover="this.style.background='rgba(34,197,94,.2)';" onmouseout="this.style.background='rgba(34,197,94,.1)';"><i class="fas fa-download"></i></button>
+        <label title="Restore data dari backup" style="width:32px;height:32px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:8px;color:#60a5fa;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;" onmouseover="this.style.background='rgba(59,130,246,.2)';" onmouseout="this.style.background='rgba(59,130,246,.1)';"><i class="fas fa-upload"></i><input type="file" accept=".json" onchange="restoreData(event)" style="display:none;"/></label>
         <button onclick="loadAbsensiAdmin()" style="width:32px;height:32px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:all .2s;" onmouseover="this.style.color='#fff';" onmouseout="this.style.color='rgba(255,255,255,.4)';"><i class="fas fa-sync-alt"></i></button>
       </div>
     </header>
@@ -277,22 +279,23 @@
     })();
 
     function filterDataAbsen() {
-      var search = document.getElementById('searchKaryawan').value.trim().toLowerCase();
-      var bulan  = document.getElementById('filterBulanDetail').value;
-      var users  = JSON.parse(localStorage.getItem('users') || '[]').filter(function(u){ return u.role === 'karyawan'; });
+      var search  = document.getElementById('searchKaryawan').value.trim().toLowerCase();
+      var bulan   = document.getElementById('filterBulanDetail').value;
+      var users   = JSON.parse(localStorage.getItem('users') || '[]').filter(function(u){ return u.role === 'karyawan'; });
       var absensi = JSON.parse(localStorage.getItem('absensi') || '[]');
 
       if (search) users = users.filter(function(u){ return u.nama.toLowerCase().indexOf(search) !== -1; });
 
       var rows = [];
       users.forEach(function(u) {
+        // Cari by userId ATAU by nama (fallback kalau id berubah)
         var rec = absensi.filter(function(a){
-          return a.userId === u.id && (!bulan || a.tanggal.startsWith(bulan));
+          var matchUser = a.userId === u.id || (a.nama && a.nama.toLowerCase() === u.nama.toLowerCase());
+          var matchBulan = !bulan || a.tanggal.startsWith(bulan);
+          return matchUser && matchBulan;
         });
         rec.sort(function(a,b){ return a.tanggal.localeCompare(b.tanggal); });
-        rec.forEach(function(a) {
-          rows.push({ u:u, a:a });
-        });
+        rec.forEach(function(a) { rows.push({ u:u, a:a }); });
       });
 
       var tbody = document.getElementById('bodyDataAbsen');
@@ -344,7 +347,10 @@
       if (search) users = users.filter(function(u){ return u.nama.toLowerCase().indexOf(search) !== -1; });
       var csv = 'Nama,Divisi,Tanggal,Hari,Jam Masuk,Jam Keluar,Status,Lokasi\n';
       users.forEach(function(u) {
-        var rec = absensi.filter(function(a){ return a.userId === u.id && (!bulan || a.tanggal.startsWith(bulan)); });
+        var rec = absensi.filter(function(a){
+          var matchUser = a.userId === u.id || (a.nama && a.nama.toLowerCase() === u.nama.toLowerCase());
+          return matchUser && (!bulan || a.tanggal.startsWith(bulan));
+        });
         rec.sort(function(a,b){ return a.tanggal.localeCompare(b.tanggal); });
         rec.forEach(function(a) {
           var tgl  = new Date(a.tanggal + 'T00:00:00');
