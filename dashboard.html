@@ -134,7 +134,7 @@
             <thead><tr>
               <th class="th">#</th><th class="th">Karyawan</th><th class="th">Divisi</th>
               <th class="th">Jam Masuk</th><th class="th">Jam Keluar</th>
-              <th class="th">Status</th><th class="th">Lokasi</th><th class="th">Foto</th>
+              <th class="th">Status</th><th class="th">Lokasi</th><th class="th">Foto</th><th class="th">Aksi</th>
             </tr></thead>
             <tbody id="bodyAdmin"><tr><td colspan="8" class="td" style="text-align:center;color:rgba(255,255,255,.25);padding:28px;"><i class="fas fa-spinner fa-spin"></i> Memuat...</td></tr></tbody>
           </table>
@@ -200,6 +200,7 @@
               <th class="th">Jam Keluar</th>
               <th class="th">Status</th>
               <th class="th">Lokasi</th>
+              <th class="th">Aksi</th>
             </tr></thead>
             <tbody id="bodyDataAbsen">
               <tr><td colspan="8" class="td" style="text-align:center;color:rgba(255,255,255,.25);padding:28px;">Pilih nama atau bulan untuk melihat data</td></tr>
@@ -304,7 +305,7 @@
       var info  = document.getElementById('dataAbsenInfo');
 
       if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="td" style="text-align:center;color:rgba(255,255,255,.25);padding:28px;">' + (search || bulan ? 'Tidak ada data ditemukan' : 'Pilih nama atau bulan untuk melihat data') + '</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="td" style="text-align:center;color:rgba(255,255,255,.25);padding:28px;">' + (search || bulan ? 'Tidak ada data ditemukan' : 'Pilih nama atau bulan untuk melihat data') + '</td></tr>';
         info.textContent = '';
         return;
       }
@@ -320,7 +321,6 @@
         var hari   = tgl.toLocaleDateString('id-ID', { weekday:'long' });
         var tglFmt = tgl.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
         var ss     = statusStyle[a.status] || statusStyle['Tidak Hadir'];
-        // Cari divisi dari users, fallback ke yang tersimpan di absensi
         var user   = users.find(function(u){ return u.id === a.userId; });
         var divisi = user ? user.divisi : (a.divisi || '—');
         return '<tr>'
@@ -332,8 +332,11 @@
           + '<td class="td" style="font-variant-numeric:tabular-nums;">' + (a.jamKeluar || '—') + '</td>'
           + '<td class="td"><span style="' + ss + ';font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:20px;display:inline-block;">' + a.status + '</span></td>'
           + '<td class="td" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (a.lokasi || '—') + '</td>'
+          + '<td class="td"><button onclick="hapusAbsensi(' + a.id + ')" style="background:rgba(239,68,68,.12);color:#f87171;border:none;padding:5px 10px;border-radius:7px;font-size:.75rem;cursor:pointer;" onmouseover="this.style.background=\'rgba(239,68,68,.25)\';" onmouseout="this.style.background=\'rgba(239,68,68,.12)\';" title="Hapus absensi ini"><i class="fas fa-trash"></i></button></td>'
           + '</tr>';
       }).join('');
+
+      if (!filtered.length) tbody.innerHTML = '<tr><td colspan="9" class="td" style="text-align:center;color:rgba(255,255,255,.25);padding:28px;">' + (search || bulan ? 'Tidak ada data ditemukan' : 'Pilih nama atau bulan untuk melihat data') + '</td></tr>';
 
       info.textContent = filtered.length + ' record ditemukan';
     }
