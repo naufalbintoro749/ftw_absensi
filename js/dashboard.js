@@ -27,17 +27,7 @@ function saveUsers(u) {
   sessionStorage.setItem('users_backup', json); // selalu backup
 }
 function getAbsensi() {
-  try {
-    var s = localStorage.getItem('absensi');
-    if (s !== null) {
-      sessionStorage.setItem('absensi_backup', s);
-      return JSON.parse(s);
-    }
-    // localStorage benar-benar null (bukan array kosong) — coba restore backup
-    var backup = sessionStorage.getItem('absensi_backup');
-    if (backup) { localStorage.setItem('absensi', backup); return JSON.parse(backup); }
-    return [];
-  } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem('absensi') || '[]'); } catch(e) { return []; }
 }
 function todayStr()   { return new Date().toISOString().split('T')[0]; }
 
