@@ -90,6 +90,7 @@ function loadAbsensiAdmin() {
       + '<td class="td">' + statusChip(st) + '</td>'
       + '<td class="td" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (rec && rec.lokasi ? rec.lokasi : '—') + '</td>'
       + '<td class="td">' + foto + '</td>'
+      + '<td class="td">' + (rec ? '<button onclick="hapusAbsensi(' + rec.id + ')" style="background:rgba(239,68,68,.12);color:#f87171;border:none;padding:5px 10px;border-radius:7px;font-size:.75rem;cursor:pointer;" onmouseover="this.style.background=\'rgba(239,68,68,.25)\';" onmouseout="this.style.background=\'rgba(239,68,68,.12)\';" title="Hapus absensi"><i class="fas fa-trash"></i></button>' : '<span style="color:rgba(255,255,255,.2);">—</span>') + '</td>'
       + '</tr>';
   }).join('');
 
@@ -176,6 +177,16 @@ function simpanKaryawan(e) {
   saveUsers(users);
   closeModalKaryawan();
   loadKaryawan(); loadSummary();
+}
+
+// ===== HAPUS ABSENSI =====
+function hapusAbsensi(id) {
+  if (!confirm('Hapus data absensi ini?')) return;
+  var list = getAbsensi().filter(function(a){ return a.id !== id; });
+  var json = JSON.stringify(list);
+  localStorage.setItem('absensi', json);
+  loadSummary();
+  loadAbsensiAdmin();
 }
 
 // ===== REKAP BULANAN =====
