@@ -4,8 +4,18 @@ if (!currentUser) { window.location.href = 'index.html'; }
 
 // ===== HELPERS =====
 function getAbsensi()     { try { return JSON.parse(localStorage.getItem('absensi') || '[]'); } catch(e){ return []; } }
-function saveAbsensi(d)   { localStorage.setItem('absensi', JSON.stringify(d)); }
-function todayStr()       { return new Date().toISOString().split('T')[0]; }
+function saveAbsensi(d)   {
+  var json = JSON.stringify(d);
+  localStorage.setItem('absensi', json);
+  sessionStorage.setItem('absensi_backup', json);
+}
+function todayStr() {
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var dd = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + dd;
+}
 function nowTimeStr()     { return new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' }); }
 function getTodayRecord() { return getAbsensi().find(function(a){ return a.userId === currentUser.id && a.tanggal === todayStr(); }); }
 function el(id)           { return document.getElementById(id); }
