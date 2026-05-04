@@ -269,9 +269,12 @@
       allOpt.value = ''; allOpt.textContent = 'Semua Bulan';
       sel.appendChild(allOpt);
       for (var i = 0; i < 12; i++) {
-        var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        var d   = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        var y   = d.getFullYear();
+        var m   = String(d.getMonth() + 1).padStart(2, '0');
+        var val = y + '-' + m;
         var opt = document.createElement('option');
-        opt.value = d.toISOString().slice(0, 7);
+        opt.value = val;
         opt.textContent = d.toLocaleDateString('id-ID', { month:'long', year:'numeric' });
         if (i === 0) opt.selected = true;
         sel.appendChild(opt);
