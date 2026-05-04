@@ -281,27 +281,26 @@
     function filterDataAbsen() {
       var search  = document.getElementById('searchKaryawan').value.trim().toLowerCase();
       var bulan   = document.getElementById('filterBulanDetail').value;
-      var users   = JSON.parse(localStorage.getItem('users') || '[]').filter(function(u){ return u.role === 'karyawan'; });
       var absensi = JSON.parse(localStorage.getItem('absensi') || '[]');
+      var users   = JSON.parse(localStorage.getItem('users') || '[]');
 
-      if (search) users = users.filter(function(u){ return u.nama.toLowerCase().indexOf(search) !== -1; });
+      // Filter langsung dari data absensi, bukan dari users
+      var filtered = absensi.filter(function(a) {
+        var matchBulan = !bulan || a.tanggal.startsWith(bulan);
+        var matchNama  = !search || (a.nama && a.nama.toLowerCase().indexOf(search) !== -1);
+        return matchBulan && matchNama;
+      });
 
-      var rows = [];
-      users.forEach(function(u) {
-        // Cari by userId ATAU by nama (fallback kalau id berubah)
-        var rec = absensi.filter(function(a){
-          var matchUser = a.userId === u.id || (a.nama && a.nama.toLowerCase() === u.nama.toLowerCase());
-          var matchBulan = !bulan || a.tanggal.startsWith(bulan);
-          return matchUser && matchBulan;
-        });
-        rec.sort(function(a,b){ return a.tanggal.localeCompare(b.tanggal); });
-        rec.forEach(function(a) { rows.push({ u:u, a:a }); });
+      // Urutkan by nama lalu tanggal
+      filtered.sort(function(a,b){
+        var n = (a.nama||'').localeCompare(b.nama||'');
+        return n !== 0 ? n : a.tanggal.localeCompare(b.tanggal);
       });
 
       var tbody = document.getElementById('bodyDataAbsen');
       var info  = document.getElementById('dataAbsenInfo');
 
-      if (!rows.length) {
+      if (!filtered.length) {
         tbody.innerHTML = '<tr><td colspan="8" class="td" style="text-align:center;color:rgba(255,255,255,.25);padding:28px;">' + (search || bulan ? 'Tidak ada data ditemukan' : 'Pilih nama atau bulan untuk melihat data') + '</td></tr>';
         info.textContent = '';
         return;
@@ -313,24 +312,27 @@
         'Tidak Hadir': 'background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.25)',
       };
 
-      tbody.innerHTML = rows.map(function(r) {
-        var tgl  = new Date(r.a.tanggal + 'T00:00:00');
-        var hari = tgl.toLocaleDateString('id-ID', { weekday:'long' });
+      tbody.innerHTML = filtered.map(function(a) {
+        var tgl    = new Date(a.tanggal + 'T00:00:00');
+        var hari   = tgl.toLocaleDateString('id-ID', { weekday:'long' });
         var tglFmt = tgl.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
-        var ss = statusStyle[r.a.status] || statusStyle['Tidak Hadir'];
+        var ss     = statusStyle[a.status] || statusStyle['Tidak Hadir'];
+        // Cari divisi dari users, fallback ke yang tersimpan di absensi
+        var user   = users.find(function(u){ return u.id === a.userId; });
+        var divisi = user ? user.divisi : (a.divisi || '—');
         return '<tr>'
-          + '<td class="td" style="font-weight:600;color:rgba(255,255,255,.9);">' + r.u.nama + '</td>'
-          + '<td class="td">' + r.u.divisi + '</td>'
+          + '<td class="td" style="font-weight:600;color:rgba(255,255,255,.9);">' + (a.nama || '—') + '</td>'
+          + '<td class="td">' + divisi + '</td>'
           + '<td class="td">' + tglFmt + '</td>'
           + '<td class="td">' + hari + '</td>'
-          + '<td class="td" style="font-variant-numeric:tabular-nums;">' + (r.a.jamMasuk || '—') + '</td>'
-          + '<td class="td" style="font-variant-numeric:tabular-nums;">' + (r.a.jamKeluar || '—') + '</td>'
-          + '<td class="td"><span style="' + ss + ';font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:20px;display:inline-block;">' + r.a.status + '</span></td>'
-          + '<td class="td" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (r.a.lokasi || '—') + '</td>'
+          + '<td class="td" style="font-variant-numeric:tabular-nums;">' + (a.jamMasuk || '—') + '</td>'
+          + '<td class="td" style="font-variant-numeric:tabular-nums;">' + (a.jamKeluar || '—') + '</td>'
+          + '<td class="td"><span style="' + ss + ';font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:20px;display:inline-block;">' + a.status + '</span></td>'
+          + '<td class="td" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (a.lokasi || '—') + '</td>'
           + '</tr>';
       }).join('');
 
-      info.textContent = rows.length + ' record ditemukan';
+      info.textContent = filtered.length + ' record ditemukan';
     }
 
     function resetDataAbsen() {
@@ -342,21 +344,26 @@
     function exportDetailCSV() {
       var search  = document.getElementById('searchKaryawan').value.trim().toLowerCase();
       var bulan   = document.getElementById('filterBulanDetail').value;
-      var users   = JSON.parse(localStorage.getItem('users') || '[]').filter(function(u){ return u.role === 'karyawan'; });
       var absensi = JSON.parse(localStorage.getItem('absensi') || '[]');
-      if (search) users = users.filter(function(u){ return u.nama.toLowerCase().indexOf(search) !== -1; });
+      var users   = JSON.parse(localStorage.getItem('users') || '[]');
+
+      var filtered = absensi.filter(function(a) {
+        var matchBulan = !bulan || a.tanggal.startsWith(bulan);
+        var matchNama  = !search || (a.nama && a.nama.toLowerCase().indexOf(search) !== -1);
+        return matchBulan && matchNama;
+      });
+      filtered.sort(function(a,b){
+        var n = (a.nama||'').localeCompare(b.nama||'');
+        return n !== 0 ? n : a.tanggal.localeCompare(b.tanggal);
+      });
+
       var csv = 'Nama,Divisi,Tanggal,Hari,Jam Masuk,Jam Keluar,Status,Lokasi\n';
-      users.forEach(function(u) {
-        var rec = absensi.filter(function(a){
-          var matchUser = a.userId === u.id || (a.nama && a.nama.toLowerCase() === u.nama.toLowerCase());
-          return matchUser && (!bulan || a.tanggal.startsWith(bulan));
-        });
-        rec.sort(function(a,b){ return a.tanggal.localeCompare(b.tanggal); });
-        rec.forEach(function(a) {
-          var tgl  = new Date(a.tanggal + 'T00:00:00');
-          var hari = tgl.toLocaleDateString('id-ID', { weekday:'long' });
-          csv += '"'+u.nama+'","'+u.divisi+'","'+a.tanggal+'","'+hari+'","'+(a.jamMasuk||'-')+'","'+(a.jamKeluar||'-')+'","'+a.status+'","'+(a.lokasi||'-')+'"\n';
-        });
+      filtered.forEach(function(a) {
+        var user   = users.find(function(u){ return u.id === a.userId; });
+        var divisi = user ? user.divisi : (a.divisi || '-');
+        var tgl    = new Date(a.tanggal + 'T00:00:00');
+        var hari   = tgl.toLocaleDateString('id-ID', { weekday:'long' });
+        csv += '"'+(a.nama||'-')+'","'+divisi+'","'+a.tanggal+'","'+hari+'","'+(a.jamMasuk||'-')+'","'+(a.jamKeluar||'-')+'","'+a.status+'","'+(a.lokasi||'-')+'"\n';
       });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv' }));
